@@ -1,8 +1,8 @@
 import * as React from 'react';
 import { Route } from 'react-router-dom'
 
-import EnterContainer from './Ui/Pages/Login/EnterContainer'
-import Game from '../src/Ui/Pages/Game/Game'
+import EnterContainer from './Ui/Pages/Enter/EnterContainer'
+import Game from './Ui/Pages/Game/Game'
 import Header from '../src/Ui/Components/Header/Header'
 import Footer from '../src/Ui/Components/Footer/Footer'
 

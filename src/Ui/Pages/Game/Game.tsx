@@ -1,22 +1,22 @@
 import * as React from 'react';
-import { connect } from 'react-redux'
+import * as styles from './Game.css';
+import ShowUserName from '../../Components/ShowUserName/ShowUserName'
+import TimerContainer from '../../Components/Timer/TimerContainer'
+import ChatContainer from '../../Components/Chat/ChatContainer'
+import BoardContainer from '../../Components/Board/BoardContainer'
 
-class Game extends React.Component {
-    render() {
-        // console.log(this.props.state);
+const Game = () => {
+    return (
+        <div className={styles.container}>
+            <div className={styles.header}>
+                <ShowUserName />
+                <TimerContainer />
+            </div>
 
-        return (
-            <h2>
-                Game
-            </h2>
-        )
-    }
-}
+            <ChatContainer />
+            <BoardContainer />
+        </div>
+    )
+};
 
-function mapStateToProps(state) {
-    return {
-        state
-    };
-}
-
-export default connect(mapStateToProps)(Game);
+export default Game;
