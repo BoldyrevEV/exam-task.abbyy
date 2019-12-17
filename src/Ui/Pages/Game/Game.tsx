@@ -12,9 +12,10 @@ const Game = () => {
                 <ShowUserName />
                 <TimerContainer />
             </div>
-
-            <ChatContainer />
-            <BoardContainer />
+            <div className={styles.content}>
+                <BoardContainer />
+                <ChatContainer />
+            </div>
         </div>
     )
 };

@@ -1,21 +1,21 @@
 import * as React from 'react';
 import * as styles from './Chat.css';
+import {LegacyRef} from "react";
 
 interface ChatComponentProps {
     messages: React.ReactElement[];
     handleSubmit: () => void;
     handleChange: (event: React.ChangeEvent<HTMLInputElement>) => void;
     text: string;
+    listRef: LegacyRef<HTMLDivElement>
 }
 
 const ChatComponent = (props: ChatComponentProps) => {
     return (
-        <div className={styles.chatContainer}>
-            <p className={styles.mainText}>My Chat</p>
-            <div className={styles.chatBoard}>
-                <ul className={styles.chatBoardList}>
-                    {props.messages}
-                </ul>
+        <div>
+            <p className={styles.mainText}>Game chat</p>
+            <div className={styles.chatBoard} ref={props.listRef}>
+                {props.messages}
             </div>
             <div className={styles.chatInputControl}>
                 <input

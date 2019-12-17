@@ -1,31 +1,58 @@
-.chatContainer {
-
-}
-
 .mainText {
-
+    font-size: 20px;
+    text-align: center;
+    margin-bottom: 5px;
 }
 
 .chatBoard {
-
-}
-
-.chatBoardList {
-
+    width: 320px;
+    height: 375px;
+    border: 1px solid gray;
+    border-radius: 3px;
+    overflow-x: auto;
+    overflow-y: auto;
+    padding: 15px 15px 0 15px;
 }
 
 .boardText {
-
+    margin-bottom: 15px;
+    font-size: 18px;
+    border: 1px solid #6cabff;
+    background-color: #6cabff;
+    border-radius: 5px;
+    padding: 5px;
+    display: table;
+    color: white;
 }
 
 .chatInputControl {
-
+    margin-top: 15px;
+    display: flex;
+    justify-content: space-between;
 }
 
 .chatInput {
-
+    width: 230px;
+    height: 34px;
+    border: solid 1px #afbcc6;
+    border-radius: 3px;
+    padding: 0 10px;
+    font-size: 16px;
+    outline: none;
 }
 
 .chatButton {
+    width: 90px;
+    height: 35px;
+    border-radius: 3px;
+    background-color: #4a8ee0;
+    border: none;
+    outline: none;
+    color: white;
+    font-size: 16px;
+}
 
+.chatButton:hover {
+    background-color: #3572dd;
+    cursor: pointer;
 }
