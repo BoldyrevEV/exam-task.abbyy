@@ -1,130 +1,219 @@
 import * as React from 'react';
 import * as styles from './Board.css';
 import BoardComponent from './BoardComponent'
+import {rows, cols} from '../../../constants/constants'
 
 interface BoardContainerState {
-
+    figures: Figure[],
+    selectedChecker: boolean,
+    firstSelectedElem: HTMLTableDataCellElement,
+    colorSelectedChecker: string
 }
 
+interface Figure {
+    value: string,
+    color: string,
+    row: number,
+    col: string,
+    isSelect: boolean,
+    status: boolean
+}
 
 export default class BoardContainer extends React.Component {
-    figures: [
-        { name: 'p', color: 'w', pos: 'a2' },
-        { name: 'p', color: 'w', pos: 'b2' },
-        { name: 'p', color: 'w', pos: 'c2' },
-        { name: 'p', color: 'w', pos: 'd2' },
-        { name: 'p', color: 'w', pos: 'e2' },
-        { name: 'p', color: 'w', pos: 'f2' },
-        { name: 'p', color: 'w', pos: 'g2' },
-        { name: 'p', color: 'w', pos: 'h2' },
-        { name: 'R', color: 'w', pos: 'a1' },
-        { name: 'N', color: 'w', pos: 'b1' },
-        { name: 'B', color: 'w', pos: 'c1' },
-        { name: 'Q', color: 'w', pos: 'd1' },
-        { name: 'K', color: 'w', pos: 'e1' },
-        { name: 'B', color: 'w', pos: 'f1' },
-        { name: 'N', color: 'w', pos: 'g1' },
-        { name: 'R', color: 'w', pos: 'h1' },
-
-        { name: 'p', color: 'b', pos: 'a7' },
-        { name: 'p', color: 'b', pos: 'b7' },
-        { name: 'p', color: 'b', pos: 'c7' },
-        { name: 'p', color: 'b', pos: 'd7' },
-        { name: 'p', color: 'b', pos: 'e7' },
-        { name: 'p', color: 'b', pos: 'f7' },
-        { name: 'p', color: 'b', pos: 'g7' },
-        { name: 'p', color: 'b', pos: 'h7' },
-        { name: 'R', color: 'b', pos: 'a8' },
-        { name: 'N', color: 'b', pos: 'b8' },
-        { name: 'B', color: 'b', pos: 'c8' },
-        { name: 'Q', color: 'b', pos: 'd8' },
-        { name: 'K', color: 'b', pos: 'e8' },
-        { name: 'B', color: 'b', pos: 'f8' },
-        { name: 'N', color: 'b', pos: 'g8' },
-        { name: 'R', color: 'b', pos: 'h8' },
-    ]
-
-    figureHtml: {
-        pw: '&#9817;',
-        Bw: '&#9815;',
-        Nw: '&#9816;',
-        Rw: '&#9814;',
-        Qw: '&#9813;',
-        Kw: '&#9812;',
-
-        pb: '&#9823;',
-        Bb: '&#9821;',
-        Nb: '&#9822;',
-        Rb: '&#9820;',
-        Qb: '&#9819;',
-        Kb: '&#9818;',
-    }
+    state: BoardContainerState = {
+        figures: [
+            // white
+            {value: '⛀', color: 'white', row: 1, col: 'a', isSelect: false, status: true},
+            {value: '⛀', color: 'white', row: 1, col: 'c', isSelect: false, status: true},
+            {value: '⛀', color: 'white', row: 1, col: 'e', isSelect: false, status: true},
+            {value: '⛀', color: 'white', row: 1, col: 'g', isSelect: false, status: true},
+            // black
+            {value: '⛂', color: 'black', row: 8, col: 'b', isSelect: false, status: true},
+            {value: '⛂', color: 'black', row: 8, col: 'd', isSelect: false, status: true},
+            {value: '⛂', color: 'black', row: 8, col: 'f', isSelect: false, status: true},
+            {value: '⛂', color: 'black', row: 8, col: 'h', isSelect: false, status: true},
+        ],
+        selectedChecker: false,
+        colorSelectedChecker: 'black',
+        firstSelectedElem: null,
+    };
 
     /**
-     * Отображает карту (игровое поле).
+     * Рендерит элементы достки для вставки в <tbody>.
+     * @returns массив из JSX элементов <tr> и <td>.
      */
-    renderMap = () => {
-        const rows = [0, 8, 7, 6, 5, 4, 3, 2, 1, 0];
-        const cols = [0, 'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 0];
-
-        const table = rows.map((tr: number, indexTr: number) => {
+    renderMap = (): JSX.Element[] => {
+        return rows.map((tr: number, indexTr: number) => {
             return <tr key={indexTr} className={styles.tr}>
-                {cols.map((td: number, indexTd: number) => {
+                {cols.map((td: number | string, indexTd: number) => {
                     let cellValue: number | string;
+                    const style: string = this.isCellIsBlack(indexTr, indexTd) ? styles.tdBlack : styles.td;
 
-                    // Если либо строка, либо колонка равна 0, значит это не игровое поле.
                     if (tr === 0 && td !== 0) {
-                        // Если это верхнее или нижнее поля, отображаем какие колонки есть, 0 не выводим.
                         cellValue = td;
                     } else if (td === 0 && tr !== 0) {
-                        // Если это левое или правое поля, отображаем цифры игрового поля, 0 не выводим.
                         cellValue = tr.toString();
+                    } else if (tr === 0 && td === 0) {
+                        cellValue = '';
+                    } else {
+                        cellValue = this.renderFigures(tr, td);
                     }
 
-                    const style = this.isCellIsBlack(indexTr, indexTd) ? styles.tdBlack : styles.td;
-
-                    return <td key={indexTd} className={style} data-row={tr} data-col={td}>{cellValue}</td>
+                    return <td
+                        key={indexTd}
+                        className={style}
+                        data-row={tr}
+                        data-col={td}
+                        onClick={this.boardCellClick}
+                    >
+                        {cellValue}
+                    </td>
                 })}
             </tr>
         })
-
-        return table;
-    }
+    };
 
     /**
      * Определяет является ли ячейка черной.
-     * @param {int} rowNum Номер в строке.
-     * @param {int} colNum Номер в колонке.
-     * @returns {boolean} true, если ячейка должна быть черной, иначе false.
+     * @param rowNum - номер в строке.
+     * @param colNum - номер в колонке.
+     * @returns true, если ячейка должна быть черной, иначе false.
      */
-    isCellIsBlack = (rowNum, colNum) => {
-        // Если ячейка боковая (не игровое поле), их красить не нужно.
+    isCellIsBlack = (rowNum: number, colNum: number): boolean => {
         if (rowNum === 0 || colNum === 0 || rowNum === 9 || colNum === 9) {
             return false;
         }
 
-        // Определяем по четности/нечетности строки и колонки.
         return (rowNum % 2 === 1 && colNum % 2 === 0) || (rowNum % 2 === 0 && colNum % 2 === 1);
-    }
-
+    };
 
     /**
      * Отображает фигуры на поле.
+     * @param row - номер в строке.
+     * @param col - номер в колонке.
+     * @returns фигуру (белая или черная пешка) на поле.
      */
-    renderFigures = () => {
-        // Перебираем все фигуры, которые есть в массиве.
-        for (const figure of this.figures) {
-            // Получаем колонку и строку, где стоит фигура.
-            const col = figure.pos.charAt(0);
-            const row = figure.pos.charAt(1);
-            // Находим нужную ячейку, ставим ей innerHTML взятый из объекта this.figureHtml,
-            // ключ - это два символа, имя фигуры и цвет, в итоге получим символ фигуры.
-            document.querySelector(`[data-col='${col}'][data-row='${row}']`).innerHTML =
-                this.figureHtml[figure.name + figure.color];
+    renderFigures = (row: number, col: number | string): string => {
+        let figureValue: string = '';
+
+        for (const figure of this.state.figures) {
+            if (row === figure.row && col === figure.col && figure.status) {
+                return figureValue = figure.value
+            }
         }
-    }
+
+        return figureValue;
+    };
+
+
+
+
+
+
+    boardCellClick = (event: any): void => {
+        const elem: any = event.target;
+        const rowElem: number = +elem.getAttribute('data-row');
+        const colElem: string = elem.getAttribute('data-col');
+        const deleteElem: Figure = this.getDeletedChecker(this.state.figures, rowElem, colElem); // элемент который рубят
+
+        for (let i = 0; i < this.state.figures.length; i++) {
+            const figure: Figure = this.state.figures[i];
+
+            // выбор шашки (первое нажатие)
+            if (rowElem === figure.row &&
+                colElem === figure.col &&
+                !this.state.selectedChecker &&
+                figure.color !== this.state.colorSelectedChecker
+            ) {
+                this.getCheckerForMove(i, elem);
+
+            // ход шашки (второе нажатие)
+            } else if (
+                this.state.selectedChecker &&
+                figure.isSelect &&
+                elem !== this.state.firstSelectedElem &&
+                ((deleteElem && deleteElem.color !== figure.color) || !deleteElem) &&
+                !(rowElem === 0 || colElem === '0')
+            ) {
+                const newStateFigures = this.deleteArrElem(this.state.figures, rowElem, colElem);
+                const color = this.state.colorSelectedChecker === 'white' ? 'black' : 'white';
+
+                this.state.firstSelectedElem.classList.remove(`${styles.isSelect}`);
+
+
+                newStateFigures[i].isSelect = false;
+                newStateFigures[i].row = rowElem;
+                newStateFigures[i].col = colElem;
+
+                this.setState({
+                    figures: newStateFigures,
+                    selectedChecker: false,
+                    firstSelectedElem: null,
+                    colorSelectedChecker: color
+                });
+            }
+        }
+
+    };
+
+    /**
+     * Выбирае шашку для дальнейшего хода (первое нажатие).
+     * @param index - индекс Figure в массиве шашек.
+     * @param elem - элемент на котором произошло действие onClick.
+     */
+    getCheckerForMove = (index: number, elem: HTMLElement): void => {
+        const newStateFigures: Figure[] = this.state.figures;
+
+        newStateFigures[index].isSelect = true;
+        elem.classList.add(`${styles.isSelect}`);
+
+        this.setState({
+            figures: newStateFigures,
+            selectedChecker: true,
+            firstSelectedElem: elem
+        });
+    };
+
+
+    /**
+     * Инициализирует удаление шашки (status = false).
+     * @param arrChecker - маассив фигур.
+     * @param row - номер в строке.
+     * @param col - номер в колонке.
+     * @returns обьект Figure.
+     */
+    deleteArrElem = (arrChecker: Figure[], row: number, col: string): Figure[] => {
+        for (let i = 0; i < arrChecker.length; i++) {
+            if (arrChecker[i].row === row && arrChecker[i].col === col && arrChecker[i].status) {
+                arrChecker[i].status = false;
+                arrChecker[i].row = 0;
+                arrChecker[i].col = '0';
+            }
+        }
+
+        return arrChecker;
+    };
+
+    /**
+     * Возвращает обьект шашки, которую будут рубить.
+     * @param arrChecker - маассив фигур.
+     * @param row - номер в строке.
+     * @param col - номер в колонке.
+     * @returns обьект Figure.
+     */
+    getDeletedChecker = (arrChecker: Figure[], row: number, col: string): Figure | null => {
+        let figure: Figure | null = null;
+
+        for (let i = 0; i < arrChecker.length; i++) {
+            if (arrChecker[i].row === row && arrChecker[i].col === col) {
+                figure = arrChecker[i];
+            }
+        }
+
+        return figure;
+    };
 
     render() {
-        return <BoardComponent table={this.renderMap()}/>;
+        return <BoardComponent table={this.renderMap()} strokeColor={this.state.colorSelectedChecker}/>;
     }
 }
