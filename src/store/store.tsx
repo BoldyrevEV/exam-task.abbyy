@@ -1,13 +1,15 @@
+import {State, Action} from '../appTypes'
+
 // Actions
 const USERNAME: string = 'USERNAME';
 
 
 // Reducer
-const initialState = {
+const initialState: State = {
     userName: '',
 };
 
-export default function reducer(state=initialState, action) {
+export default function reducer(state: State = initialState, action: Action): State {
     switch (action.type) {
         case USERNAME:
             return {...state, userName: action.payload};
@@ -18,7 +20,7 @@ export default function reducer(state=initialState, action) {
 
 
 // Action Creators
-export function getUserName (userName: string): {} {
+export function getUserName (userName: string): Action {
     return {
         type: USERNAME,
         payload: userName,

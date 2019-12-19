@@ -105,16 +105,15 @@ export default class BoardContainer extends React.Component {
         return figureValue;
     };
 
-
-
-
-
-
-    boardCellClick = (event: any): void => {
-        const elem: any = event.target;
+    /**
+     * Обработчик onClick на доске.
+     * @param event
+     */
+    boardCellClick = (event: React.MouseEvent<HTMLTableDataCellElement>): void => {
+        const elem = event.target as HTMLTableDataCellElement;
         const rowElem: number = +elem.getAttribute('data-row');
         const colElem: string = elem.getAttribute('data-col');
-        const deleteElem: Figure = this.getDeletedChecker(this.state.figures, rowElem, colElem); // элемент который рубят
+        const deleteElem: Figure = this.getDeletedChecker(this.state.figures, rowElem, colElem);
 
         for (let i = 0; i < this.state.figures.length; i++) {
             const figure: Figure = this.state.figures[i];
@@ -125,7 +124,7 @@ export default class BoardContainer extends React.Component {
                 !this.state.selectedChecker &&
                 figure.color !== this.state.colorSelectedChecker
             ) {
-                this.getCheckerForMove(i, elem);
+                this.selectCheckerForMove(i, elem);
 
             // ход шашки (второе нажатие)
             } else if (
@@ -135,25 +134,9 @@ export default class BoardContainer extends React.Component {
                 ((deleteElem && deleteElem.color !== figure.color) || !deleteElem) &&
                 !(rowElem === 0 || colElem === '0')
             ) {
-                const newStateFigures = this.deleteArrElem(this.state.figures, rowElem, colElem);
-                const color = this.state.colorSelectedChecker === 'white' ? 'black' : 'white';
-
-                this.state.firstSelectedElem.classList.remove(`${styles.isSelect}`);
-
-
-                newStateFigures[i].isSelect = false;
-                newStateFigures[i].row = rowElem;
-                newStateFigures[i].col = colElem;
-
-                this.setState({
-                    figures: newStateFigures,
-                    selectedChecker: false,
-                    firstSelectedElem: null,
-                    colorSelectedChecker: color
-                });
+                this.moveChecker(i, rowElem, colElem);
             }
         }
-
     };
 
     /**
@@ -161,7 +144,7 @@ export default class BoardContainer extends React.Component {
      * @param index - индекс Figure в массиве шашек.
      * @param elem - элемент на котором произошло действие onClick.
      */
-    getCheckerForMove = (index: number, elem: HTMLElement): void => {
+    selectCheckerForMove = (index: number, elem: HTMLElement): void => {
         const newStateFigures: Figure[] = this.state.figures;
 
         newStateFigures[index].isSelect = true;
@@ -174,6 +157,29 @@ export default class BoardContainer extends React.Component {
         });
     };
 
+    /**
+     * Перемещает шашку на выбранное поле.
+     * @param index - индекс Figure в массиве шашек.
+     * @param row - номер в строке.
+     * @param col - номер в колонке.
+     */
+    moveChecker = (index: number, row: number, col: string): void => {
+        const newStateFigures: Figure[] = this.deleteArrElem(this.state.figures, row, col);
+        const color: string = this.state.colorSelectedChecker === 'white' ? 'black' : 'white';
+
+        this.state.firstSelectedElem.classList.remove(`${styles.isSelect}`);
+
+        newStateFigures[index].isSelect = false;
+        newStateFigures[index].row = row;
+        newStateFigures[index].col = col;
+
+        this.setState({
+            figures: newStateFigures,
+            selectedChecker: false,
+            firstSelectedElem: null,
+            colorSelectedChecker: color
+        });
+    };
 
     /**
      * Инициализирует удаление шашки (status = false).
