@@ -1,5 +1,5 @@
 import * as React from 'react';
-import TimerComponent from './TimerComponent'
+import * as styles from "./Timer.css";
 
 interface TimerContainerState {
     date: Date;
@@ -11,7 +11,7 @@ interface TimerOptions {
     second: string
 }
 
-export default class TimerContainer extends React.Component {
+export default class Timer extends React.Component {
     private timerID: number  = 0;
 
     state: TimerContainerState = {
@@ -46,6 +46,11 @@ export default class TimerContainer extends React.Component {
             second: 'numeric'
         };
 
-        return <TimerComponent timer={this.state.date.toLocaleString("ru", options)}/>;
+        return (
+            <p className={styles.userNameContainer}>
+                <span className={styles.mainText}>Timer: </span>
+                {this.state.date.toLocaleString("ru", options)}
+            </p>
+        )
     }
 }

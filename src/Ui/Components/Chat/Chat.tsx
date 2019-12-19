@@ -1,13 +1,12 @@
 import * as React from 'react';
 import * as styles from './Chat.css';
-import ChatComponent from './ChatComponent'
 
 interface ChatContainerState {
     messages: string[];
     text: string;
 }
 
-export default class ChatContainer extends React.Component {
+export default class Chat extends React.Component {
     private listRef = React.createRef<HTMLDivElement>();
     state: ChatContainerState = {
         messages: [],
@@ -68,12 +67,23 @@ export default class ChatContainer extends React.Component {
             return <p className={styles.boardText} key={index}>{message}</p>;
         });
 
-        return <ChatComponent
-            messages={elMessages}
-            handleSubmit={this.handleSubmit}
-            handleChange={this.handleChange}
-            text={this.state.text}
-            listRef={this.listRef}
-        />;
+        return (
+            <div>
+                <p className={styles.mainText}>Game chat</p>
+                <div className={styles.chatBoard} ref={this.listRef}>
+                    {elMessages}
+                </div>
+                <div className={styles.chatInputControl}>
+                    <input
+                        type="text"
+                        className={styles.chatInput}
+                        onChange={this.handleChange}
+                        value={this.state.text}
+                        placeholder="Enter your message"
+                    />
+                    <button className={styles.chatButton} onClick={this.handleSubmit}>Send</button>
+                </div>
+            </div>
+        );
     }
 }
