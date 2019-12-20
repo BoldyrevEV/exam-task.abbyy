@@ -58,9 +58,10 @@ export default class Board extends React.Component {
                     return <td
                         key={indexTd}
                         className={style}
-                        data-row={rowNum}
-                        data-col={colNum}
-                        onClick={this.boardCellClick}
+                        onClick={
+                            (event: React.MouseEvent<HTMLTableDataCellElement>) =>
+                            this.boardCellClick(event, rowNum, colNum as string)
+                        }
                     >
                         {cellValue}
                     </td>
@@ -126,11 +127,11 @@ export default class Board extends React.Component {
     /**
      * Обработчик onClick на доске.
      * @param event
+     * @param rowElem - номер в строке.
+     * @param colElem - номер в колонке.
      */
-    boardCellClick = (event: React.MouseEvent<HTMLTableDataCellElement>): void => {
+    boardCellClick = (event: React.MouseEvent<HTMLTableDataCellElement>, rowElem: number, colElem: string): void => {
         const elem = event.target as HTMLTableDataCellElement;
-        const rowElem: number = +elem.getAttribute('data-row');
-        const colElem: string = elem.getAttribute('data-col');
         const deleteElem: Figure = this.getDeletedChecker(this.state.figures, rowElem, colElem);
 
         for (let i = 0; i < this.state.figures.length; i++) {
